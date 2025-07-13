@@ -76,10 +76,10 @@ WSGI_APPLICATION = 'cubot.wsgi.application'
 DATABASES = {
     "default": {
         'ENGINE': "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", "apprecio_db"),
+        "NAME": os.environ.get("DB_NAME", "cubot_db"),
         "USER": os.environ.get("DB_USER", "test_user"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "password"),
-        "PORT": os.environ.get("DB_PORT", 3306),
+        "PORT": os.environ.get("DB_PORT", 5432),
         "HOST": os.environ.get("DB_HOST", "localhost"),
     }
 }

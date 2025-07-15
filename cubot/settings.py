@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "rest_framework",
     # Custom apps
     "apps.chat",
+    # Extensions
+    "django_extensions",
 ]
 
 MIDDLEWARE = [

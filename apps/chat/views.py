@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from apps.chat.models import Conversation, ConversationMessage
 from apps.chat.serializers import ConversationSerializer
 
+from apps.chat.engines.ollama_engine import OllamaChatEngine
+from apps.chat.services.debate import DebateService
+
 
 class ConversationView(APIView):
 
@@ -15,11 +18,22 @@ class ConversationView(APIView):
                 ConversationMessage.objects.create(
                     conversation=conversation, rol="user", message=message
                 )
+
+                response = DebateService(OllamaChatEngine()).handle_turn(
+                    topic=conversation.topic,
+                    messages=[
+                        {"rol": "user", "message": message.message}
+                        for message in conversation.messages.all()
+                    ],
+                )
+                ConversationMessage.objects.create(
+                    conversation=conversation, rol="bot", message=response
+                )
                 serializer = ConversationSerializer(conversation)
                 return Response(serializer.data, status=200)
             except Conversation.DoesNotExist:
                 return Response({"error": "Conversation not found"}, status=404)
         else:
-            conversation = Conversation.objects.create()
+            conversation = Conversation.objects.create(topic=message)
             serializer = ConversationSerializer(conversation)
             return Response(serializer.data, status=200)

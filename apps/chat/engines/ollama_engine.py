@@ -1,13 +1,16 @@
 import httpx
+
+from django.conf import settings
+
 from apps.chat.engines.base import BaseChatEngine
 from apps.chat.prompts import SYSTEM_PROMPT, get_intro_message
 
 
 class OllamaChatEngine(BaseChatEngine):
 
-    def __init__(self, model: str = "phi3", host: str = "http://localhost:11434"):
+    def __init__(self, model: str = "phi3"):
         self.model = model
-        self.host = host
+        self.host = settings.OLLAMA_HOST or "http://localhost:11434"
 
     def generate_reply(self, topic: str, messages: list) -> str:
         prompt = self.format_prompt(messages, topic)

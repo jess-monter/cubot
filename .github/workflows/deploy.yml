@@ -1,0 +1,62 @@
+name: Development packaging and server update
+
+on:
+  push:
+    branches:
+      - 'main'
+
+env:
+  IMAGE_NAME: cubot-api
+  DJANGO_SETTINGS_MODULE: cubot.settings
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run tests
+        run: |
+          if [ -f docker-compose.test.yml ]; then
+            docker-compose --file docker-compose.test.yml run sut
+          fi
+  packaging:
+
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build API image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+
+      - name: Log into registry
+        run: echo "${{ secrets.GIT_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push web image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          # Use Docker `latest` tag convention
+          echo IMAGE_ID=$IMAGE_ID
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
+
+  deploy:
+
+    needs: packaging
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare deploy key
+      run: echo "${{ secrets.KEY }}" > $HOME/remote.key && chmod 400 $HOME/remote.key
+    - name: Update server
+      run: ssh -o StrictHostKeyChecking=no -i $HOME/remote.key -T ${{ secrets.USER }}@${{ secrets.HOST }} "${{ secrets.COMMAND }}"

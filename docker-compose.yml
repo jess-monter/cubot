@@ -1,0 +1,44 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cubot-api
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3031:3031"
+    volumes:
+      - ./media:/app/media
+      - static-content:/app/static
+    depends_on:
+      - db
+      - ollama
+  db:
+    image: postgres:16
+    container_name: cubot-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cubot_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  ollama:
+    image: ollama/ollama
+    container_name: cubot-ollama
+    restart: unless-stopped
+    ports:
+      - "11435:11434"
+    volumes:
+      - ./ollama-entrypoint.sh:/app/ollama-entrypoint.sh
+      - ollama_models:/root/.ollama
+    entrypoint: /app/ollama-entrypoint.sh
+    working_dir: /app
+volumes:
+  pgdata:
+  ollama_models:
+  static-content:

@@ -4,11 +4,17 @@ services:
       context: .
       dockerfile: Dockerfile.test
     container_name: cubot-api-test
-    env_file:
-      - .env.test
+    environment:
+      SECRET_KEY: test_secretkeyb3c4d5e6f7g8lnastwfpb_3*q8r9s0t1u2
+      DJANGO_SETTINGS_MODULE: cubot.settings
+      DB_HOST: db
+      DB_USER: postgres
+      DB_NAME: cubot_db_test
+      DB_PORT: 5432
+      DB_PASSWORD: postgres
     depends_on:
       - db
-    command: ["pytest", "-q"]
+    command: ["pytest"]
 
   db:
     image: postgres:16
@@ -17,5 +23,4 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: cubot_db_test
-    ports:
-      - "55432:5432"
+

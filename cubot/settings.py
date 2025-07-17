@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     # Custom apps
     "apps.chat",
+    "apps.llm_experiments",
     # Extensions
     "django_extensions",
 ]

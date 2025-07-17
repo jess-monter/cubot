@@ -1,0 +1,21 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: cubot-api-test
+    env_file:
+      - .env.test
+    depends_on:
+      - db
+    command: ["pytest", "-q"]
+
+  db:
+    image: postgres:16
+    container_name: cubot-db-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cubot_db_test
+    ports:
+      - "55432:5432"

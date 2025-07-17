@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 import httpx
 
 from django.conf import settings
@@ -19,13 +21,11 @@ class OllamaChatEngine(BaseChatEngine):
         prompt = self.format_prompt(messages, topic)
 
         response = httpx.post(
-            f"{self.host}/api/generate",
+            f"{self.host}/api/chat",
             json={
                 "model": self.model,
-                "prompt": prompt,
-                "system": self.prompt,
+                "messages": prompt,
                 "temperature": 0.9,
-                "stop": ["User:", "Bot:"],
                 "stream": False,
             },
             timeout=60.0,
@@ -33,14 +33,14 @@ class OllamaChatEngine(BaseChatEngine):
         response.raise_for_status()
         return response.json()["response"].strip()
 
-    def format_prompt(self, messages: list, topic: str) -> str:
-        lines = [get_intro_message(topic).strip(), ""]
+    def format_prompt(self, messages: list, topic: str) -> List[Dict]:
+        system_message = self.prompt.strip() + "\n\n" + get_intro_message(topic).strip()
+        prompt = [{"role": "system", "content": system_message}]
         for msg in messages:
             role = msg["rol"]
+            content = msg["message"].strip()
             if role == "user":
-                lines.append(f"User: {msg['message'].strip()}")
+                prompt.append({"role": "user", "content": content})
             elif role == "bot":
-                lines.append(f"Bot: {msg['message'].strip()}")
-
-        lines.append("Bot:")  # ← model continues here
-        return "\n".join(lines)
+                prompt.append({"role": "assistant", "content": content})
+        return prompt

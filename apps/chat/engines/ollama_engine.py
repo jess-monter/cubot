@@ -37,10 +37,7 @@ class OllamaChatEngine(BaseChatEngine):
         lines = [get_intro_message(topic).strip(), ""]
         for msg in messages:
             role = msg["rol"]
-            if role == "user":
-                lines.append(f"User: {msg['message'].strip()}")
-            elif role == "bot":
-                lines.append(f"Bot: {msg['message'].strip()}")
+            lines.append(f"{'User' if role == 'user' else 'Bot'}: {msg['message'].strip()}")
 
         lines.append("Bot:")  # ← model continues here
         return "\n".join(lines)

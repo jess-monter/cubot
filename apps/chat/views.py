@@ -22,7 +22,7 @@ class ConversationView(APIView):
                 response = DebateService(OllamaChatEngine()).handle_turn(
                     topic=conversation.topic,
                     messages=[
-                        {"rol": "user", "message": message.message}
+                        {"rol": message.rol, "message": message.message}
                         for message in conversation.messages.all()
                     ],
                 )

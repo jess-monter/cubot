@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: cubot-api
     restart: always
+    command: [ "python", "manage.py", "runserver", "0.0.0.0:3031"]
     env_file:
       - .env
     ports:

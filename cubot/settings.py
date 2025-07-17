@@ -31,6 +31,12 @@ ALLOWED_HOSTS = [
 ]
 
 
+CSRF_TRUSTED_ORIGINS = [os.environ.get("HOST", "https://cu-bot.com")]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+APPEND_SLASH = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +46,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Cors headers
+    "corsheaders",
     # Rest framework
     "rest_framework",
     # Custom apps
@@ -52,6 +60,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

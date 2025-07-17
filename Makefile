@@ -1,5 +1,9 @@
 .PHONY: test test-build test-clean
 
+
+## ☄️ Run project in Docker
+run:
+	docker compose up -d
 ## 🧪 Run tests inside Docker
 test:
 	docker compose -f docker-compose.test.yml up --build --abort-on-container-exit

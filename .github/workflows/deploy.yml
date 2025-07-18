@@ -24,7 +24,6 @@ jobs:
           fi
   packaging:
 
-    needs: test
 
     runs-on: ubuntu-latest
 

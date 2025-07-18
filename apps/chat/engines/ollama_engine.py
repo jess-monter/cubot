@@ -16,7 +16,10 @@ class OllamaChatEngine(BaseChatEngine):
         self.host = settings.OLLAMA_HOST
 
     def generate_reply(self, topic: str, messages: list) -> str:
-        prompt = self.format_prompt(messages, topic)
+        if not messages:
+            prompt = get_intro_message(topic).strip()
+        else:
+            prompt = self.format_prompt(messages, topic)
 
         response = httpx.post(
             f"{self.host}/api/generate",

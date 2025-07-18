@@ -29,15 +29,16 @@ class ConversationView(APIView):
 
             conversation_service.add_message(conversation, message_text, rol="user")
 
-            last_messages = conversation_service.get_last_messages(conversation, limit=5)
-            bot_reply = debate_service.handle_turn(
-                topic=conversation.topic,
-                messages=last_messages,
-            )
-
-            conversation_service.add_message(conversation, bot_reply, rol="bot")
         else:
             conversation = conversation_service.create_conversation(message_text=message_text)
+
+        last_messages = conversation_service.get_last_messages(conversation, limit=5)
+        bot_reply = debate_service.handle_turn(
+            topic=conversation.topic,
+            messages=last_messages,
+        )
+
+        conversation_service.add_message(conversation, bot_reply, rol="bot")
 
         serializer = ConversationSerializer(conversation)
         return Response(serializer.data, status=200)
